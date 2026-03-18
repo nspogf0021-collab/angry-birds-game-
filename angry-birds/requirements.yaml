@@ -1,0 +1,27 @@
+packages:
+  "framer-motion": "For bouncy UI animations and page transitions"
+  "canvas-confetti": "For level complete celebration effects"
+  "@types/canvas-confetti": "Types for canvas-confetti"
+  "lucide-react": "Icons for UI"
+  "clsx": "Utility for Tailwind class merging"
+  "tailwind-merge": "Utility for Tailwind class merging"
+  "zustand": "For lightweight global state (sound, music settings)"
+
+images:
+  - path: "artifacts/angry-birds/public/images/splash-bg.png"
+    description: "Vibrant cartoon landscape with bright blue sky, fluffy white clouds, and lush green rolling hills, style of angry birds"
+    aspect_ratio: "16:9"
+  - path: "artifacts/angry-birds/public/images/logo.png"
+    description: "Playful, bold, cartoonish game logo text saying 'ANGRY BIRDS' in bright red and yellow with a thick black outline and bouncy letters"
+    aspect_ratio: "16:9"
+  - path: "artifacts/angry-birds/public/images/game-bg.png"
+    description: "Seamless 2D cartoon parallax background with distant mountains, blue sky, and a flat grassy ground at the bottom for a side-scrolling physics game"
+    aspect_ratio: "16:9"
+  - path: "artifacts/angry-birds/public/images/shop-bg.png"
+    description: "Wooden shelves inside a rustic cartoon treehouse, warm lighting, used as a background for an item shop"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using HTML5 Canvas with custom requestAnimationFrame loop for gameplay.
+  - Monkey-patching window.fetch in App.tsx to automatically inject the Authorization header with the token from localStorage.
+  - Generating 500 levels procedurally in code to ensure performance and avoid massive payload sizes.
