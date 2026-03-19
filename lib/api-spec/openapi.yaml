@@ -1,0 +1,415 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Angry Birds Game API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: game
+    description: Game progress and shop operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "200":
+          description: Successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Successfully logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Successfully logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /game/progress:
+    get:
+      operationId: getProgress
+      tags: [game]
+      summary: Get player progress
+      responses:
+        "200":
+          description: Player progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProgress"
+    put:
+      operationId: updateProgress
+      tags: [game]
+      summary: Update player progress after completing a level
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProgressRequest"
+      responses:
+        "200":
+          description: Updated progress
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PlayerProgress"
+  /game/shop:
+    get:
+      operationId: getShopItems
+      tags: [game]
+      summary: Get all shop items (birds to unlock)
+      responses:
+        "200":
+          description: List of shop items
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShopItemsResponse"
+  /game/shop/purchase:
+    post:
+      operationId: purchaseItem
+      tags: [game]
+      summary: Purchase a bird unlock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PurchaseRequest"
+      responses:
+        "200":
+          description: Purchase successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseResponse"
+        "400":
+          description: Insufficient coins or already owned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /game/leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [game]
+      summary: Get top players leaderboard
+      responses:
+        "200":
+          description: Leaderboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LeaderboardResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required:
+        - success
+
+    RegisterRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - email
+        - password
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/UserProfile"
+        token:
+          type: string
+      required:
+        - user
+        - token
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        coins:
+          type: integer
+        totalScore:
+          type: integer
+        createdAt:
+          type: string
+      required:
+        - id
+        - username
+        - email
+        - coins
+        - totalScore
+        - createdAt
+
+    PlayerProgress:
+      type: object
+      properties:
+        userId:
+          type: integer
+        highestLevel:
+          type: integer
+        coins:
+          type: integer
+        totalScore:
+          type: integer
+        levelScores:
+          type: array
+          items:
+            $ref: "#/components/schemas/LevelScore"
+        unlockedBirds:
+          type: array
+          items:
+            type: string
+      required:
+        - userId
+        - highestLevel
+        - coins
+        - totalScore
+        - levelScores
+        - unlockedBirds
+
+    LevelScore:
+      type: object
+      properties:
+        level:
+          type: integer
+        stars:
+          type: integer
+        score:
+          type: integer
+      required:
+        - level
+        - stars
+        - score
+
+    UpdateProgressRequest:
+      type: object
+      properties:
+        level:
+          type: integer
+        score:
+          type: integer
+        stars:
+          type: integer
+        coinsEarned:
+          type: integer
+      required:
+        - level
+        - score
+        - stars
+        - coinsEarned
+
+    ShopItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        cost:
+          type: integer
+        emoji:
+          type: string
+        color:
+          type: string
+        ability:
+          type: string
+      required:
+        - id
+        - name
+        - description
+        - cost
+        - emoji
+        - color
+        - ability
+
+    ShopItemsResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/ShopItem"
+      required:
+        - items
+
+    PurchaseRequest:
+      type: object
+      properties:
+        itemId:
+          type: string
+      required:
+        - itemId
+
+    PurchaseResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        remainingCoins:
+          type: integer
+        unlockedBirds:
+          type: array
+          items:
+            type: string
+      required:
+        - success
+        - remainingCoins
+        - unlockedBirds
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        rank:
+          type: integer
+        username:
+          type: string
+        totalScore:
+          type: integer
+        highestLevel:
+          type: integer
+      required:
+        - rank
+        - username
+        - totalScore
+        - highestLevel
+
+    LeaderboardResponse:
+      type: object
+      properties:
+        entries:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeaderboardEntry"
+      required:
+        - entries
